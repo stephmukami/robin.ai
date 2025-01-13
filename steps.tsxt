@@ -1,0 +1,7 @@
+COMMANDS RAN/ STEPS FOR USE
+- I decomposed the code into front end and back end modules
+- Added api key to .env
+- I installed packages for Gemini to run in the terminal ie 
+1.composer require google-gemini-php/client
+2. composer require vlucas/phpdotenv
+
