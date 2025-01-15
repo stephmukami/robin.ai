@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./uiFront.css">
+  <script src="./robin.js" defer></script>
+  <title>Content Hook Generator</title>
+</head>
+<body>
+  <main class="lws-tool">
+    <div class="popup"></div>
+    <section class="hook-generator">
+      <div class="tool-container">
+        <form onsubmit="onFormSubmit(event)">
+          <div class="textarea-container">
+            <textarea 
+              required 
+              name="hook-topic" 
+              rows="2" 
+              oninput="handleInputChange(event)" 
+              placeholder="Describe your next idea briefly"
+            ></textarea>
+          </div>
+          <p class="counter">0 / 150</p>
+          <div class="flex-justify-between">
+            <div class="dropdown">
+              <p class="selected-type" onclick="handleDropDownClick()">Short Video</p>
+              <div class="list">
+                <p onclick="handleContentTypeSelection(event)" data-id="short_video">Short Video</p>
+                <p onclick="handleContentTypeSelection(event)" data-id="email">Email</p>
+                <p onclick="handleContentTypeSelection(event)" data-id="social_post">Social Post</p>
+                <p onclick="handleContentTypeSelection(event)" data-id="blog_posts">Blog Posts</p>
+                <p onclick="handleContentTypeSelection(event)" data-id="video_intro">Video Intro</p>
+                <p onclick="handleContentTypeSelection(event)" data-id="story">Story</p>
+                <p onclick="handleContentTypeSelection(event)" data-id="ad">Ad</p>
+                <p onclick="handleContentTypeSelection(event)" data-id="documentary">Documentary</p>
+                <p onclick="handleContentTypeSelection(event)" data-id="essay">Essay</p>
+                <p onclick="handleContentTypeSelection(event)" data-id="educational_content">Educational Content</p>
+                <p onclick="handleContentTypeSelection(event)" data-id="presentation">Presentation</p>
+                <p onclick="handleContentTypeSelection(event)" data-id="marketing_content">Marketing Content</p>
+                <p onclick="handleContentTypeSelection(event)" data-id="entertainment">Entertainment</p>
+                <p onclick="handleContentTypeSelection(event)" data-id="speech">Speech</p>
+                <p onclick="handleContentTypeSelection(event)" data-id="debate">Debate</p>
+                <p onclick="handleContentTypeSelection(event)" data-id="report">Report</p>
+              </div>
+            </div>
+            <button type="submit">Generate Hooks</button>
+          </div>
+        </form>
+      </div>
+    </section>
+    <div class="loading"></div>
+    <section class="lws-tool-result"></section>
+  </main>
+</body>
+</html>

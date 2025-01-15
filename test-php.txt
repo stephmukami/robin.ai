@@ -1,0 +1,126 @@
+<?php
+require 'vendor/autoload.php';
+
+use Dotenv\Dotenv;
+use Google\GenerativeAI;
+
+// Set CORS headers
+header('Access-Control-Allow-Origin: http://127.0.0.1:8080');
+header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+header('Content-Type: application/json');
+
+// Handle preflight requests
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
+try {
+    // Load environment variables
+    $dotenv = Dotenv::createImmutable(__DIR__);
+    $dotenv->load();
+
+    $apiKey = $_ENV['GEMINI_API_KEY'];
+
+    if (!$apiKey) {
+        throw new Exception("API key not loaded. Please check your .env file.");
+    }
+
+    // Validate incoming JSON
+    $jsonData = file_get_contents('php://input');
+    $data = json_decode($jsonData, true);
+
+    if (!$data) {
+        throw new Exception("Invalid JSON data received");
+    }
+
+    $topic = $data['topic'] ?? '';
+    $contentType = $data['usage'] ?? '';
+
+    if (empty($topic) || empty($contentType)) {
+        throw new Exception("Topic and content type are required");
+    }
+
+    // Initialize Gemini client
+    $client = Gemini::client($apiKey);
+
+    // Generate prompt
+    $prompt = generatePrompt($topic, $contentType);
+
+    // Fetch response from Gemini
+    $result = $client->geminiPro()->generateContent($prompt);
+    //echo($result);
+
+    if (!$result) {
+        throw new Exception("Failed to generate content");
+    }
+
+    // Format response
+    $hooks = formatResponse($result->content ?? '', $contentType);
+
+    echo json_encode([
+        "status" => "success",
+        "hooks" => $result
+    ]);
+
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode([
+        "status" => "error",
+        "error" => $e->getMessage()
+    ]);
+}
+
+// Generate prompt based on content type
+function generatePrompt($topic, $contentType) {
+    $prompts = [
+        'Short Video' => "Generate 5 engaging hooks for a short video about: $topic",
+        'Speech' => "Generate 5 powerful opening statements for a speech about: $topic",
+        'Debate' => "Generate 5 compelling argumentative hooks for a debate on: $topic",
+        'Email' => "Generate 5 attention-grabbing email subject lines about: $topic",
+        'Social Post' => "Generate 5 engaging social media hooks about: $topic",
+        'Blog Posts' => "Generate 5 compelling blog post introductions about: $topic",
+        'Story' => "Generate 5 captivating story openings about: $topic",
+        'Educational Content' => "Generate 5 educational hooks to introduce: $topic",
+        'Ad Copy' => "Generate 5 captivating hooks to advertise: $topic"
+    ];
+
+    return $prompts[$contentType] ?? "Generate 5 engaging hooks about: $topic";
+}
+
+// Format response into hooks array
+function formatResponse($text, $contentType) {
+    $lines = array_values(array_filter(
+        array_map('trim', explode("\n", $text)),
+        fn($line) => !empty($line) && strlen($line) > 5
+    ));
+
+    $lines = array_slice($lines, 0, 5);
+
+    $hooks = [];
+    foreach ($lines as $index => $line) {
+        $hooks[] = [
+            'hook' => $line,
+            'hook_type' => getHookType($contentType, $index)
+        ];
+    }
+
+    return $hooks;
+}
+
+// Get hook type
+function getHookType($contentType, $index) {
+    $types = [
+        'Speech' => ['Powerful Opening', 'Emotional Appeal', 'Rhetorical Question', 'Statistical Hook', 'Call to Action'],
+        'Debate' => ['Challenge Statement', 'Statistical Evidence', 'Controversial Claim', 'Historical Reference', 'Logical Appeal'],
+        'Short Video' => ['Attention Grabber', 'Curiosity Hook', 'Problem Statement', 'Story Hook', 'Question Hook'],
+        'Email' => ['Urgent Appeal', 'Value Proposition', 'Curiosity Gap', 'Personal Touch', 'Action Trigger'],
+        'Social Post' => ['Engagement Hook', 'Question Hook', 'Statement Hook', 'Story Hook', 'Challenge Hook'],
+        'Blog Posts' => ['Problem Hook', 'Story Hook', 'Statistical Hook', 'Question Hook', 'Quote Hook'],
+        'Educational Content' => ['Curiosity Hook', 'Problem Hook', 'Relevance Hook', 'Question Hook', 'Fact Hook']
+    ];
+
+    return $types[$contentType][$index] ?? 'General Hook';
+}
+?>

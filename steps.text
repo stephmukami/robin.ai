@@ -5,3 +5,4 @@ COMMANDS RAN/ STEPS FOR USE
 1.composer require google-gemini-php/client
 2. composer require vlucas/phpdotenv
 
+php -S localhost:8080
