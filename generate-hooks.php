@@ -66,9 +66,18 @@ try {
             }
         ));
 
-        // Format hooks into the expected structure
+        // Clean up markdown formatting
         $formattedHooks = array_map(function($hook) {
-            return ['hook' => trim($hook)];
+            // Remove markdown numbering
+            $hook = preg_replace('/^\d+\.\s+/', '', $hook);
+            // Remove bold markdown
+            $hook = preg_replace('/\*\*(.*?)\*\*/', '$1', $hook);
+            // Remove any remaining asterisks
+            $hook = str_replace('*', '', $hook);
+            // Trim any extra whitespace
+            $hook = trim($hook);
+            
+            return ['hook' => $hook];
         }, $hooks);
 
         echo json_encode([
