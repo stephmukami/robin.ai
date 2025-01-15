@@ -1,8 +1,15 @@
 COMMANDS RAN/ STEPS FOR USE
-- I decomposed the code into front end and back end modules
+- I split the code into front end and back end modules
 - Added api key to .env
 - I installed packages for Gemini to run in the terminal ie 
+
+STEPS
+Go Gemini and get an api key create a file named . env and paste it like this 
+GEMINI_API_KEY= <your key>
+
+go the terminal by clicking `ctrl + ~`
+run these commands:
 1.composer require google-gemini-php/client
 2. composer require vlucas/phpdotenv
-
-php -S localhost:8080
+3.php -S localhost:8080 go to the url you are given ie http://127.0.0.1:8080/
+4. Put in your prompt
